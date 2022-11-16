@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime as dt
 from time import sleep
 
 try:
@@ -38,13 +38,18 @@ class OpenCvCapture(object):
         print ("Running, ESC or Ctrl-c to exit...")
         cnt = 1
 
-        start_time = datetime.now()
+        start_time = dt.datetime.now()
+        end_time = start_time + dt.timedelta(seconds=10)
 
         # run for 10 seconds
-        while (datetime.now() - start_time).seconds <= 10:
+        while (dt.datetime.now() <= end_time):
             ret, img = self.cv2_cap.read()
-            print(f"Frame: {cnt}")
-            print(img.shape)
+            if cnt==1:
+                start_time = dt.datetime.now()
+                end_time = start_time + dt.timedelta(seconds=10)
+            print(f"Frame No: {cnt} | Time Now: {dt.datetime.now()}")
+            # print(f"Frame: {cnt}")
+            # print(img.shape)
             cnt += 1
 
             if ret == False:
@@ -58,6 +63,9 @@ class OpenCvCapture(object):
             # wait for ESC key to exit
             if cv2.waitKey(1) == 27:
                 break
+
+        end_time = dt.datetime.now()
+        print(f"Duration: {end_time - start_time}")
 
         cv2.destroyAllWindows()
 

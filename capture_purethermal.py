@@ -41,8 +41,14 @@ class PT2Capture():
         start_time = dt.datetime.now()
         end_time = start_time + dt.timedelta(seconds=self.duration)
 
+        print(f"Capturing thermal images for {self.duration} seconds...")
         while (dt.datetime.now() <= end_time):
             ret, img = self.cap.read()
+            
+            if ret == False:
+                raise Exception("Error reading image")
+
+            
             frame_numpy = np.array(img)
             
             # get filename from count + timestamp
@@ -64,7 +70,9 @@ class PT2Capture():
             if cnt==1: # only run once to define the end time based on first frame read
                 start_time = dt.datetime.now()
                 end_time = start_time + dt.timedelta(seconds=self.duration)
-            print(f"Frame No: {cnt} | Time Now: {dt.datetime.now()}")
+            
+            # print(f"Frame No: {cnt} | Time Now: {dt.datetime.now()}")
+            
             cnt += 1
 
             # preview

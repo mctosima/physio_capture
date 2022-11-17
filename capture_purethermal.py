@@ -7,6 +7,11 @@ import os
 class PT2Capture():
     """
     Capturing from PureThermal2 and save it to CSV
+    Args:
+        subject_name (str): Name of the subject
+        device_id (int): Device ID of the camera
+        save_path (str): Directory of Dataset
+        duration (int): Duration of capturing in seconds
     """
 
     def __init__(
@@ -17,7 +22,7 @@ class PT2Capture():
         duration = 10,
         
     ):
-        cap = cv2.VideoCapture(device_id)
+        cap = cv2.VideoCapture(device_id, cv2.CAP_DSHOW) #windowsOS needs cv2.CAP_DSHOW
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 120)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 160)
         cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc('Y','1','6',' '))
@@ -33,7 +38,7 @@ class PT2Capture():
         self.subject_name = subject_name
 
 
-    def show_video(self):
+    def start_capture_pt(self):
 
         cv2.namedWindow("Preview", cv2.WINDOW_NORMAL)
         cnt = 0
@@ -99,6 +104,6 @@ class PT2Capture():
         cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-    capture = PT2Capture(device_id=0, save_path="./dataset", duration=10, subject_name="SampleSubject")
-    capture.show_video()
+    capture = PT2Capture(device_id=1, save_path="./dataset", duration=10, subject_name="SampleSubject")
+    capture.start_capture_pt()
 

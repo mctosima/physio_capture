@@ -15,7 +15,7 @@ class OpenCvCapture(object):
     def __init__(self):
         # capture from the LAST camera in the system
         # presumably, if the system has a built-in webcam it will be the first
-        cv2_cap = cv2.VideoCapture(0)
+        cv2_cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
         cv2_cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 120)
         cv2_cap.set(cv2.CAP_PROP_FRAME_WIDTH, 160)
         cv2_cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc('Y','1','6',' '))

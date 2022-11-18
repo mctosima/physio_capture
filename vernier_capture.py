@@ -7,6 +7,12 @@ import pandas as pd
 class VernierCapture():
     """
     Capturing RR and ECG from Vernier Go Direct Sensors and save it to CSV files
+    Args:
+        subject_name (str): Name of the subject
+        record_start_time (str): Start time of the recording in the format of "HH:MM:SS"
+        save_path (str): Path to save the data, default: "./dataset"
+        duration (int): Duration of the recording in seconds, default: 10
+        fps (int): Frames per second, default: 20 (currently only support 20 for BLE)
     """
 
     def __init__(
@@ -15,7 +21,7 @@ class VernierCapture():
         record_start_time,
         save_path = "./dataset",
         duration = 10,
-        fps = 40,
+        fps = 20,
     ):
 
         self.save_path = save_path
@@ -23,16 +29,23 @@ class VernierCapture():
         self.subject_name = subject_name
         self.record_start_time = dt.datetime.combine(dt.date.today(), dt.datetime.strptime(record_start_time, "%H:%M:%S").time())
 
+        # check if start_time is in the past -> Raise Error
+        if self.record_start_time - dt.timedelta(seconds=4) < dt.datetime.now():
+            raise ValueError("Start time is in the past. Please enter a valid start time.")
+
         # count the end time
         self.record_end_time = self.record_start_time + dt.timedelta(seconds=self.duration)
 
-        period = 1/fps * 1000 # in ms
-
-        # configure the gdX device
+        period = (1/fps) * 1000 # in ms
         
-        gdx.open(connection='ble', device_to_open='GDX-RB 0K1002H6, GDX-EKG 0U1000S2')
-        gdx.select_sensors([[1],[1]])
-        gdx.start(period)
+        try:
+            gdx.open(connection='ble', device_to_open='GDX-RB 0K1002H6, GDX-EKG 0U1000S2')
+            gdx.select_sensors([[1],[1]])
+            gdx.start(period)
+        except:
+            gdx.stop()
+            gdx.close()
+
         self.column_headers = gdx.enabled_sensor_info()
         self.gdx = gdx
 
@@ -45,26 +58,27 @@ class VernierCapture():
         """
         Start capturing RR and ECG from Vernier Go Direct Sensors
         """
-        # get current time
         cnt = 0
         captured_data = []
-        while(dt.datetime.now() < self.record_start_time):
+        while(dt.datetime.now() <= self.record_start_time - dt.timedelta(seconds=3)):
             if cnt == 0:
                 print(f"Waiting for the start time at {self.record_start_time}...")
+                print(f"Time Remaining: {self.record_start_time - dt.datetime.now()}")
                 cnt += 1
 
-        while(dt.datetime.now() < self.record_end_time):
+        print("Capturing the data... (-3 Seconds)")
+        # We need to do this because everytime the gdx.read() called, it flows with huge amount of data.
+        
+        while True:
             measurements = self.gdx.read()
-            if measurements == None:
-                break
-            
-            print(measurements)
-            time_stamp = dt.datetime.now()
-            measurement_combine = (time_stamp, measurements[0], measurements[1])
-            # reformat the measurements with timestamp
-            
-            captured_data.append(measurement_combine)
 
+            if (dt.datetime.now() <= self.record_end_time and dt.datetime.now() >= self.record_start_time):
+                measurement_combine = (dt.datetime.now(), measurements[0], measurements[1])
+                captured_data.append(measurement_combine)
+
+            if (dt.datetime.now() > self.record_end_time):
+                break
+        
 
         # save the data to CSV
         csv_name = self.save_path + "/" + self.subject_name + "/vernier/" + self.subject_name + "_vernier.csv"
@@ -77,18 +91,18 @@ class VernierCapture():
 
 if __name__ == "__main__":
     gdx = gdx.gdx()
-    subject_name = "jessica"
-    record_start_time = "17:19:00"
+    subject_name = "AnotherTrial"
+    record_start_time = "11:11:00"
     save_path = "./dataset"
     duration = 10
-    fps = 40
+    fps = 20 # bluetooth max 20
 
     vc = VernierCapture(
         subject_name,
         record_start_time,
         save_path,
         duration,
-        fps
+        fps,
     )
 
     vc.start_capture_vernier()

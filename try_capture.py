@@ -4,8 +4,9 @@ from time import sleep
 try:
     import cv2
 except ImportError:
-    print ("ERROR python-opencv must be installed")
+    print("ERROR python-opencv must be installed")
     exit(1)
+
 
 class OpenCvCapture(object):
     """
@@ -18,13 +19,12 @@ class OpenCvCapture(object):
         cv2_cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
         cv2_cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 120)
         cv2_cap.set(cv2.CAP_PROP_FRAME_WIDTH, 160)
-        cv2_cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc('Y','1','6',' '))
+        cv2_cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc("Y", "1", "6", " "))
         cv2_cap.set(cv2.CAP_PROP_CONVERT_RGB, 0)
         # cv2_cap.set(cv2.CAP_PROP_FPS, 12.0)
 
-
         if not cv2_cap.isOpened():
-            print ("Camera not found!")
+            print("Camera not found!")
             exit(1)
 
         self.cv2_cap = cv2_cap
@@ -35,16 +35,16 @@ class OpenCvCapture(object):
         """
 
         cv2.namedWindow("lepton", cv2.WINDOW_NORMAL)
-        print ("Running, ESC or Ctrl-c to exit...")
+        print("Running, ESC or Ctrl-c to exit...")
         cnt = 1
 
         start_time = dt.datetime.now()
         end_time = start_time + dt.timedelta(seconds=10)
 
         # run for 10 seconds
-        while (dt.datetime.now() <= end_time):
+        while dt.datetime.now() <= end_time:
             ret, img = self.cv2_cap.read()
-            if cnt==1:
+            if cnt == 1:
                 start_time = dt.datetime.now()
                 end_time = start_time + dt.timedelta(seconds=10)
             print(f"Frame No: {cnt} | Time Now: {dt.datetime.now()}")
@@ -53,13 +53,13 @@ class OpenCvCapture(object):
             cnt += 1
 
             if ret == False:
-                print ("Error reading image")
+                print("Error reading image")
                 break
 
             img = cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
             # img = cv2.applyColorMap(img, cv2.COLORMAP_AUTUMN)
             cv2.imshow("lepton", img)
-            
+
             # wait for ESC key to exit
             if cv2.waitKey(1) == 27:
                 break
@@ -69,5 +69,6 @@ class OpenCvCapture(object):
 
         cv2.destroyAllWindows()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     OpenCvCapture().show_video()

@@ -13,7 +13,7 @@ class RGBCapture:
         self,
         subject_name,
         record_start_time,
-        device_id=1,
+        device_id=2,
         save_path="./dataset",
         duration=10,
     ):
@@ -21,10 +21,8 @@ class RGBCapture:
         cap = cv2.VideoCapture(
             device_id, cv2.CAP_DSHOW
         )  # windowsOS needs cv2.CAP_DSHOW
-        cap.set(
-            cv2.CAP_PROP_FRAME_HEIGHT, 2560
-        )  # strange, when set to 2k, in become 720p
-        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1440)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc("M", "J", "P", "G"))
         cap.set(cv2.CAP_PROP_CONVERT_RGB, 1)
 
@@ -60,6 +58,7 @@ class RGBCapture:
         """
 
         cnt = 0
+        frame_no = 0
 
         while dt.datetime.now() <= self.record_start_time - dt.timedelta(seconds=3):
             if cnt == 0:
@@ -73,7 +72,7 @@ class RGBCapture:
         cv2.namedWindow("PreviewRGB", cv2.WINDOW_NORMAL)
         while True:
             ret, img = self.cap.read()
-            print(img.shape)
+
             if ret == False:
                 raise Exception("Error reading image")
             cv2.imshow("PreviewRGB", img)
@@ -85,10 +84,14 @@ class RGBCapture:
                 dt.datetime.now() <= self.record_end_time
                 and dt.datetime.now() >= self.record_start_time
             ):
+                filename = (
+                    f"{frame_no}_{dt.datetime.now().strftime('%Y%m%d_%H%M%S_%f')}.jpg"
+                )
                 cv2.imwrite(
-                    f"{self.save_path}/{self.subject_name}/rgb/{dt.datetime.now().strftime('%Y%m%d_%H%M%S_%f')}.jpg",
+                    f"{self.save_path}/{self.subject_name}/rgb/{filename}",
                     img,
                 )
+                frame_no += 1
 
             if dt.datetime.now() > self.record_end_time:
                 break
@@ -97,7 +100,7 @@ class RGBCapture:
 
 
 if __name__ == "__main__":
-    subject_name = "test"
+    subject_name = "alice"
     # record_start_time = "11:15:00"
 
     # for development only

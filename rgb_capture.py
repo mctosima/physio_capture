@@ -104,8 +104,12 @@ if __name__ == "__main__":
     # record_start_time = "11:15:00"
 
     # for development only
-    record_start_time = dt.datetime.now() + dt.timedelta(seconds=8)
-    record_start_time = record_start_time.strftime("%H:%M:%S")
+    record_start_time = (dt.datetime.now() + dt.timedelta(seconds=8)).strftime(
+        "%H:%M:%S"
+    )
+
+    print(record_start_time)
+  
     duration = 10
 
     rgb_capture = RGBCapture(

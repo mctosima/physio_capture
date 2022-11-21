@@ -25,6 +25,7 @@ class VernierCapture:
         save_path="./dataset",
         duration=10,
         fps=20,
+        connection_mode="ble",
     ):
 
         self.save_path = save_path
@@ -49,7 +50,7 @@ class VernierCapture:
 
         try:
             gdx.open(
-                connection="ble", device_to_open="GDX-RB 0K1002H6, GDX-EKG 0U1000S2"
+                connection=connection_mode, device_to_open="GDX-RB 0K1002H6, GDX-EKG 0U1000S2"
             )
             gdx.select_sensors([[1], [1]])
             gdx.start(period)
@@ -148,8 +149,13 @@ class VernierCapture:
 
 if __name__ == "__main__":
     # gdx = gdx.gdx()
-    # subject_name = "AnotherTrial"
-    # record_start_time = "11:11:00"
+    # subject_name = "bob"
+    # # record_start_time = "11:11:00"
+
+    # # for development purpose
+    # record_start_time = dt.datetime.now() + dt.timedelta(seconds=8)
+    # record_start_time = record_start_time.strftime("%H:%M:%S")
+
     # save_path = "./dataset"
     # duration = 10
     # fps = 20 # bluetooth max 20
@@ -160,10 +166,11 @@ if __name__ == "__main__":
     #     save_path,
     #     duration,
     #     fps,
+    #     connection_mode="usb",
     # )
 
     # vc.start_capture_vernier()
 
     VernierCapture.integrity_check(
-        "dataset/MartinTrial/vernier/MartinTrial_vernier.csv"
+        "dataset/alice/vernier/alice_vernier.csv"
     )

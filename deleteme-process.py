@@ -45,18 +45,28 @@ else:
 selected_subject = args.subject
 selected_duration = args.duration
 
-capturingrgb = RGBCapture(subject_name=selected_subject, record_start_time=record_start_time, duration=selected_duration)
-capturingthermal = PT2Capture(subject_name=selected_subject, record_start_time=record_start_time, duration=selected_duration)
+capturingrgb = RGBCapture(
+    subject_name=selected_subject,
+    record_start_time=record_start_time,
+    duration=selected_duration,
+)
+capturingthermal = PT2Capture(
+    subject_name=selected_subject,
+    record_start_time=record_start_time,
+    duration=selected_duration,
+)
+
 
 def startthergb():
     capturingrgb.start_capture_rgb()
+
 
 def startthethermal():
     capturingthermal.start_capture_pt()
 
 
-rgb_process = Process(target = startthergb)
-thermal_process = Process(target = startthethermal)
+rgb_process = Process(target=startthergb)
+thermal_process = Process(target=startthethermal)
 rgb_process.start()
 thermal_process.start()
 rgb_process.join()

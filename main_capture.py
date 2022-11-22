@@ -7,7 +7,9 @@ import threading
 from threading import Thread
 
 
-def main_capture_func(subject, record_start_time, duration, connection_mode, save_path, vernier_fps):
+def main_capture_func(
+    subject, record_start_time, duration, connection_mode, save_path, vernier_fps
+):
     """
     Main function to capture RGB, Thermal and Vernier data
     """
@@ -35,8 +37,9 @@ def main_capture_func(subject, record_start_time, duration, connection_mode, sav
     thermal_thread.start()
     # vernier_thread.start()
 
+
 if __name__ == "__main__":
-    
+
     # create args parsing
     parser = argparse.ArgumentParser()
 
@@ -87,7 +90,6 @@ if __name__ == "__main__":
         default=20,
         help="Frames per second for Vernier sensors",
     )
-    
 
     args = parser.parse_args()
 

@@ -5,6 +5,7 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import math
+import argparse
 
 
 class VernierCapture:
@@ -50,7 +51,8 @@ class VernierCapture:
 
         try:
             gdx.open(
-                connection=connection_mode, device_to_open="GDX-RB 0K1002H6, GDX-EKG 0U1000S2"
+                connection=connection_mode,
+                device_to_open="GDX-RB 0K1002H6, GDX-EKG 0U1000S2",
             )
             gdx.select_sensors([[1], [1]])
             gdx.start(period)
@@ -148,6 +150,46 @@ class VernierCapture:
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--name",
+        type=str,
+        help="Name of the subject",
+    )
+    parser.add_argument(
+        "--stime",
+        type=str,
+        help="Start time of the recording in the format of 'HH:MM:SS'",
+    )
+    parser.add_argument(
+        "--duration",
+        type=int,
+        help="Duration of the recording in seconds",
+        default=60,
+    )
+    parser.add_argument(
+        "--fps",
+        type=int,
+        help="Frames per second",
+        default=20,
+    )
+    parser.add_argument(
+        "--conn",
+        type=str,
+        help="Connection mode",
+        default="usb",
+    )
+    args = parser.parse_args()
+    gdx = gdx.gdx()
+    VernierCapture(
+        subject_name=args.name,
+        record_start_time=args.stime,
+        duration=args.duration,
+        fps=args.fps,
+        connection_mode=args.conn,
+    ).start_capture_vernier()
+
     # gdx = gdx.gdx()
     # subject_name = "bob"
     # # record_start_time = "11:11:00"
@@ -171,6 +213,6 @@ if __name__ == "__main__":
 
     # vc.start_capture_vernier()
 
-    VernierCapture.integrity_check(
-        "dataset/alice/vernier/alice_vernier.csv"
-    )
+    # VernierCapture.integrity_check(
+    #     "dataset/alice/vernier/alice_vernier.csv"
+    # )

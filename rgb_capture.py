@@ -2,6 +2,7 @@ import datetime as dt
 import numpy as np
 import cv2
 import os
+import argparse
 
 
 class RGBCapture:
@@ -13,7 +14,7 @@ class RGBCapture:
         self,
         subject_name,
         record_start_time,
-        device_id=2,
+        device_id=1,
         save_path="./dataset",
         duration=10,
     ):
@@ -100,22 +101,51 @@ class RGBCapture:
 
 
 if __name__ == "__main__":
-    subject_name = "alice"
-    # record_start_time = "11:15:00"
-
-    # for development only
-    record_start_time = (dt.datetime.now() + dt.timedelta(seconds=8)).strftime(
-        "%H:%M:%S"
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--name",
+        type=str,
+        help="Name of the subject",
+    )
+    parser.add_argument(
+        "--stime",
+        type=str,
+        help="Start time of recording in HH:MM:SS format",
+    )
+    parser.add_argument(
+        "--duration",
+        type=int,
+        help="Duration of recording in seconds",
+        default=60,
+    )
+    parser.add_argument(
+        "--device",
+        type=int,
+        help="Device ID of the camera",
+        default=2,
     )
 
-    print(record_start_time)
-  
-    duration = 10
+    args = parser.parse_args()
+    RGBCapture(
+        args.name, args.stime, duration=args.duration, device_id=args.device
+    ).start_capture_rgb()
 
-    rgb_capture = RGBCapture(
-        subject_name,
-        record_start_time,
-        duration=duration,
-    )
+    # subject_name = "alice"
+    # # record_start_time = "11:15:00"
 
-    rgb_capture.start_capture_rgb()
+    # # for development only
+    # record_start_time = (dt.datetime.now() + dt.timedelta(seconds=8)).strftime(
+    #     "%H:%M:%S"
+    # )
+
+    # print(record_start_time)
+
+    # duration = 10
+
+    # rgb_capture = RGBCapture(
+    #     subject_name,
+    #     record_start_time,
+    #     duration=duration,
+    # )
+
+    # rgb_capture.start_capture_rgb()

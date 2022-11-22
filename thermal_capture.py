@@ -2,6 +2,7 @@ import datetime as dt
 import numpy as np
 import cv2
 import os
+import argparse
 
 
 class PT2Capture:
@@ -113,13 +114,45 @@ class PT2Capture:
 
 
 if __name__ == "__main__":
-    subject_name = "alice"
-    # record_start_time = "10:00:00"
-
-    # for development only
-    record_start_time = (dt.datetime.now() + dt.timedelta(seconds=8)).strftime(
-        "%H:%M:%S"
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--name",
+        type=str,
+        help="Name of the subject",
     )
-    duration = 10
-    pt2 = PT2Capture(subject_name, record_start_time, duration=duration)
-    pt2.start_capture_pt()
+    parser.add_argument(
+        "--stime",
+        type=str,
+        help="Start time of recording in HH:MM:SS format",
+    )
+    parser.add_argument(
+        "--duration",
+        type=int,
+        help="Duration of recording in seconds",
+        default=60,
+    )
+    parser.add_argument(
+        "--device",
+        type=int,
+        help="Device ID of the camera",
+        default=2,
+    )
+
+    args = parser.parse_args()
+    PT2Capture(
+        subject_name=args.name,
+        record_start_time=args.stime,
+        device_id=args.device,
+        duration=args.duration,
+    ).start_capture_pt()
+
+    # subject_name = "alice"
+    # # record_start_time = "10:00:00"
+
+    # # for development only
+    # record_start_time = (dt.datetime.now() + dt.timedelta(seconds=8)).strftime(
+    #     "%H:%M:%S"
+    # )
+    # duration = 10
+    # pt2 = PT2Capture(subject_name, record_start_time, duration=duration)
+    # pt2.start_capture_pt()

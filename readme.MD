@@ -7,3 +7,7 @@ Further explanation will be added soon.
 ```bash
 python run_capture.py --name martin60d --cdown 15 --duration 60 --devicethermal 0 --devicergb 2 --dps 20 --conn usb
 ```
+
+```bash
+python verify_data.py --subject martin60c
+```

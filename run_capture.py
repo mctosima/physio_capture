@@ -85,7 +85,6 @@ if __name__ == "__main__":
     thermal_cam_id = graph.get_input_devices().index("PureThermal (fw:v1.3.0)")
     rgb_cam_id = graph.get_input_devices().index("C270 HD WEBCAM")
 
-
     if args.cdown > 0:
         capture_start_time = dt.datetime.now() + dt.timedelta(seconds=args.cdown)
         capture_start_time = capture_start_time.strftime("%H:%M:%S")

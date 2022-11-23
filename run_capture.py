@@ -1,6 +1,7 @@
 import argparse
 import subprocess
 import datetime as dt
+from pygrabber.dshow_graph import FilterGraph
 
 
 def runcapture(
@@ -22,10 +23,10 @@ def runcapture(
         f"start python thermal_capture.py --name {subject_name} --stime {record_start_time} --duration {duration} --device {device_id_thermal}",
         shell=True,
     )
-    subprocess.Popen(
-        f"start python vernier_capture.py --name {subject_name} --stime {record_start_time} --duration {duration} --conn {connection_mode} --fps {dps}",
-        shell=True,
-    )
+    # subprocess.Popen(
+    #     f"start python vernier_capture.py --name {subject_name} --stime {record_start_time} --duration {duration} --conn {connection_mode} --fps {dps}",
+    #     shell=True,
+    # )
 
 
 if __name__ == "__main__":
@@ -52,18 +53,18 @@ if __name__ == "__main__":
         help="Duration of recording in seconds",
         default=60,
     )
-    parser.add_argument(
-        "--devicethermal",
-        type=int,
-        help="Device ID of the thermal camera",
-        default=2,
-    )
-    parser.add_argument(
-        "--devicergb",
-        type=int,
-        help="Device ID of the rgb camera",
-        default=1,
-    )
+    # parser.add_argument(
+    #     "--devicethermal",
+    #     type=int,
+    #     help="Device ID of the thermal camera",
+    #     default=2,
+    # )
+    # parser.add_argument(
+    #     "--devicergb",
+    #     type=int,
+    #     help="Device ID of the rgb camera",
+    #     default=1,
+    # )
     parser.add_argument(
         "--dps",
         type=int,
@@ -79,6 +80,12 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    # get the camera id exactly
+    graph = FilterGraph()
+    thermal_cam_id = graph.get_input_devices().index("PureThermal (fw:v1.3.0)")
+    rgb_cam_id = graph.get_input_devices().index("C270 HD WEBCAM")
+
+
     if args.cdown > 0:
         capture_start_time = dt.datetime.now() + dt.timedelta(seconds=args.cdown)
         capture_start_time = capture_start_time.strftime("%H:%M:%S")
@@ -89,8 +96,8 @@ if __name__ == "__main__":
         args.name,
         capture_start_time,
         args.duration,
-        args.devicethermal,
-        args.devicergb,
+        thermal_cam_id,
+        rgb_cam_id,
         args.conn,
         args.dps,
     )

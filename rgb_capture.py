@@ -64,7 +64,7 @@ class RGBCapture:
         while dt.datetime.now() <= self.record_start_time - dt.timedelta(seconds=3):
             if cnt == 0:
                 print(
-                    f"Waiting for start time {self.record_start_time.strftime('%H:%M:%S')}..."
+                    f"[RGBCAPTURE] -> Waiting for start time {self.record_start_time.strftime('%H:%M:%S')}..."
                 )
                 print(f"Time Remaining: {self.record_start_time - dt.datetime.now()}")
                 cnt += 1

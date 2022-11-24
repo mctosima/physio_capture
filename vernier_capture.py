@@ -120,34 +120,6 @@ class VernierCapture:
         self.gdx.stop()
         self.gdx.close()
 
-    def integrity_check(csv_path):
-        print("Checking the integrity of the data...\n")
-        df = pd.read_csv(csv_path, header=None)
-        df.columns = ["Time", "RR", "ECG"]
-        print(f"Data:\n{df}")
-
-        last_timestamp = df["Time"].iloc[-1]
-        last_timestamp = dt.datetime.strptime(last_timestamp, "%Y-%m-%d %H:%M:%S.%f")
-        first_timestamp = df["Time"].iloc[0]
-        first_timestamp = dt.datetime.strptime(first_timestamp, "%Y-%m-%d %H:%M:%S.%f")
-        duration = (last_timestamp - first_timestamp).total_seconds()
-        print(f"Duration: {duration}")
-
-        # check if there is any NaN value
-        if df.isnull().values.any():
-            print("NaN value detected. Please check the data.")
-
-        # create time axis for plotting
-        time_axis = np.linspace(0, math.ceil(duration), len(df["Time"]))
-
-        # create subplots
-        fig, axs = plt.subplots(2, 1, figsize=(10, 10))
-        axs[0].plot(time_axis, df["RR"])
-        axs[0].set_title("RR")
-        axs[1].plot(time_axis, df["ECG"])
-        axs[1].set_title("ECG")
-        plt.show()
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

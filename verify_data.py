@@ -4,8 +4,10 @@ import matplotlib.pyplot as plt
 from glob import glob
 import os
 import datetime as dt
-import math
+import heartpy as hp
 import argparse
+
+ROOT = "dataset"
 
 
 def verify_start_end_dur(subjectname, the_type):
@@ -23,7 +25,6 @@ def verify_start_end_dur(subjectname, the_type):
             6. Sampling Rate
             7. Status (True/False)
     """
-    ROOT = "dataset"
 
     if the_type is not "vernier":
         if the_type == "rgb":
@@ -107,7 +108,6 @@ def verify_start_end_dur(subjectname, the_type):
 
 def plot_gt(subject, duration):
     # load the csv
-    ROOT = "dataset"
     filename = f"{subject}_vernier.csv"
     csv_path = os.path.join(ROOT, subject, "vernier", filename)
     df = pd.read_csv(csv_path, header=None)
@@ -130,8 +130,32 @@ def plot_gt(subject, duration):
     plt.show()
 
 
+def ecg_heartpy(subject, duration):
+    csv_path = os.path.join(ROOT, subject, "vernier", f"{subject}_vernier.csv")
+    df = pd.read_csv(csv_path, header=None)
+    df.columns = ["TIME", "RR", "ECG"]
+
+    # validate fps
+    fps = len(df) / duration.total_seconds()
+
+    # normalize the ecg
+    norm_ecg = df["ECG"].values
+    norm_ecg = norm_ecg - norm_ecg.min()
+    norm_ecg = norm_ecg / norm_ecg.max()
+    norm_ecg = norm_ecg * 1000
+    norm_ecg = norm_ecg.astype(int)
+
+    working_data, measures = hp.process(
+        norm_ecg, fps, high_precision=True, clipping_scale=True
+    )
+    plotresults = hp.plotter(working_data, measures, show=False)
+    savename = f"{subject}_detect_HR.png"
+    saveloc = os.path.join(ROOT, subject, savename)
+    plotresults.savefig(saveloc)
+    plotresults.show()
+
+
 def generate_report(subject):
-    ROOT = "dataset"
     item = ["rgb", "thermal", "vernier"]
 
     for source in item:
@@ -146,6 +170,7 @@ def generate_report(subject):
         ) = verify_start_end_dur(subject, source)
         if source == "vernier":
             plot_gt(subject, duration)
+            ecg_heartpy(subject, duration)
 
         # dump the report as txt
         filename = f"{subject}_report.txt"

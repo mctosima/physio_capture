@@ -47,7 +47,7 @@ class VernierCapture:
             seconds=self.duration
         )
 
-        period = (1 / fps) * 1000  # in ms
+        period = 1000/fps  # in ms
 
         try:
             gdx.open(

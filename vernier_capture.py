@@ -16,7 +16,7 @@ class VernierCapture:
         record_start_time (str): Start time of the recording in the format of "HH:MM:SS"
         save_path (str): Path to save the data, default: "./dataset"
         duration (int): Duration of the recording in seconds, default: 10
-        fps (int): Frames per second, default: 20 (currently only support 20 for BLE)
+        fps (int): Frames per second, default: 20 (currently only support 20 for the RR)
     """
 
     def __init__(
@@ -54,7 +54,7 @@ class VernierCapture:
                 connection=connection_mode,
                 device_to_open="GDX-RB 0K1002H6, GDX-EKG 0U1000S2",
             )
-            gdx.select_sensors([[1], [1]])
+            gdx.select_sensors([[1], [1,2]])
             gdx.start(period)
         except:
             gdx.stop()
@@ -78,7 +78,7 @@ class VernierCapture:
         captured_data = []
         while dt.datetime.now() <= self.record_start_time - dt.timedelta(seconds=3):
             if cnt == 0:
-                print(f"Waiting for the start time at {self.record_start_time}...")
+                print(f"[VERNIER] -> Waiting for the start time at {self.record_start_time}...")
                 print(f"Time Remaining: {self.record_start_time - dt.datetime.now()}")
                 cnt += 1
 
@@ -96,6 +96,7 @@ class VernierCapture:
                     dt.datetime.now(),
                     measurements[0],
                     measurements[1],
+                    measurements[2],
                 )
                 captured_data.append(measurement_combine)
 
@@ -111,7 +112,7 @@ class VernierCapture:
             + self.subject_name
             + "_vernier.csv"
         )
-        np.savetxt(csv_name, captured_data, delimiter=",", fmt="%s, %.20f, %.20f")
+        np.savetxt(csv_name, captured_data, delimiter=",", fmt="%s, %.20f, %.20f, %.20f")
 
         print(
             f"Captured data saved to {self.save_path}/{self.subject_name}/vernier/{self.subject_name}_vernier.csv"

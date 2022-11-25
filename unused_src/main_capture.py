@@ -91,13 +91,27 @@ if __name__ == "__main__":
         help="Frames per second for Vernier sensors",
     )
 
+    parser.add_argument(
+        "--runmin",
+        type=bool,
+        default=False,
+        help="Run the capture automatically in the next minute",
+    )
+
     args = parser.parse_args()
 
-    if args.startcd > 0:
-        record_start_time = dt.datetime.now() + dt.timedelta(seconds=args.startcd)
-        record_start_time = record_start_time.strftime("%H:%M:%S")
-    else:
-        record_start_time = args.rstime
+    if not args.runmin:
+        if args.startcd > 0:
+            record_start_time = dt.datetime.now() + dt.timedelta(seconds=args.startcd)
+            record_start_time = record_start_time.strftime("%H:%M:%S")
+        else:
+            record_start_time = args.rstime
+
+    if args.runmin:
+        nowtime = dt.datetime.now()
+        nowtime = nowtime.strftime("%H:%M")
+        nowtime = nowtime + dt.timedelta(seconds=60)
+        record_start_time = nowtime.strftime("%H:%M:%S")
 
     main_capture_func(
         subject=args.subject,

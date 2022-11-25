@@ -80,7 +80,7 @@ def verify_start_end_dur(subjectname, the_type):
 
         # load csv using pandas
         df = pd.read_csv(csv_path, header=None)
-        df.columns = ["TIME", "RR", "ECG"]
+        df.columns = ["TIME", "RR", "ECG", "HR"]
         length_of_data = len(df)
 
         # get the start time
@@ -98,10 +98,11 @@ def verify_start_end_dur(subjectname, the_type):
         fps = length_of_data / duration.total_seconds()
 
         # check if there's null
-        null = df.isnull().values.any()
+        # null = df.isnull().values.any()
 
         # status is true if fps = 20 and there is no null
-        status = int(fps) == 20 and not null
+        # status = int(fps) == 20 and not null #TODO: Fix this
+        status = int(fps) == 20
 
         return csv_path, length_of_data, start_time, end_time, duration, fps, status
 
@@ -111,7 +112,7 @@ def plot_gt(subject, duration):
     filename = f"{subject}_vernier.csv"
     csv_path = os.path.join(ROOT, subject, "vernier", filename)
     df = pd.read_csv(csv_path, header=None)
-    df.columns = ["TIME", "RR", "ECG"]
+    df.columns = ["TIME", "RR", "ECG", "HR"]
 
     # create timeaxis
     duration = duration.total_seconds()
@@ -133,7 +134,7 @@ def plot_gt(subject, duration):
 def ecg_heartpy(subject, duration):
     csv_path = os.path.join(ROOT, subject, "vernier", f"{subject}_vernier.csv")
     df = pd.read_csv(csv_path, header=None)
-    df.columns = ["TIME", "RR", "ECG"]
+    df.columns = ["TIME", "RR", "ECG", "HR"]
 
     # validate fps
     fps = len(df) / duration.total_seconds()

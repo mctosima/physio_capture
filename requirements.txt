@@ -1,0 +1,4 @@
+bleak 0.13.0
+bleak-winrt 1.0.1
+godirect 1.1.2
+hidapi 0.11.0.post2

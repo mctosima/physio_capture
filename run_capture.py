@@ -10,8 +10,6 @@ def runcapture(
     duration,
     device_id_thermal,
     device_id_rgb,
-    connection_mode,
-    dps,
 ):
 
     # list of subprocesses
@@ -23,11 +21,18 @@ def runcapture(
         f"start python thermal_capture.py --name {subject_name} --stime {record_start_time} --duration {duration} --device {device_id_thermal}",
         shell=True,
     )
+    # subprocess.Popen(
+    #     f"start python vernier_capture.py --name {subject_name} --stime {record_start_time} --duration {duration} --conn {connection_mode} --fps {dps}",
+    #     shell=True,
+    # )
     subprocess.Popen(
-        f"start python vernier_capture.py --name {subject_name} --stime {record_start_time} --duration {duration} --conn {connection_mode} --fps {dps}",
+        f"start python vernier_capture_ecg.py --name {subject_name} --stime {record_start_time} --duration {duration} --conn usb --fps 100",
         shell=True,
     )
-
+    subprocess.Popen(
+        f"start python vernier_capture_rb.py --name {subject_name} --stime {record_start_time} --duration {duration} --conn ble --fps 20",
+        shell=True,
+    )
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -65,18 +70,6 @@ if __name__ == "__main__":
     #     help="Device ID of the rgb camera",
     #     default=1,
     # )
-    parser.add_argument(
-        "--dps",
-        type=int,
-        help="Vernier Data per second",
-        default=20,
-    )
-    parser.add_argument(
-        "--conn",
-        type=str,
-        help="Vernier connection type",
-        default="usb",
-    )
 
     parser.add_argument(
         "--runmin",
@@ -113,6 +106,4 @@ if __name__ == "__main__":
         args.duration,
         thermal_cam_id,
         rgb_cam_id,
-        args.conn,
-        args.dps,
     )

@@ -15,7 +15,7 @@ def verify_start_end_dur(subjectname, the_type):
     This function verifies the start, end and duration of the data
         Args
             subjectname: name of the subject
-            type: type of data ('rgb', 'thermal', 'vernier')
+            type: type of data ('rgb', 'thermal', 'vernier_ecg', 'vernier_rb')
         Returns
             1. The directory / file path of the data
             2. Number of files in the directory / Number of row in the file
@@ -25,8 +25,8 @@ def verify_start_end_dur(subjectname, the_type):
             6. Sampling Rate
             7. Status (True/False)
     """
-
-    if the_type is not "vernier":
+    print(f"The Type: {the_type}")
+    if the_type is "rgb" or the_type is "thermal":
         if the_type == "rgb":
             ext = "jpg"
         else:
@@ -75,12 +75,12 @@ def verify_start_end_dur(subjectname, the_type):
         return the_dirpath, num_files, first_file, last_file, duration, fps, status
 
     else:
-        filename = f"{subjectname}_vernier.csv"
-        csv_path = os.path.join(ROOT, subjectname, the_type, filename)
+        filename = f"{subjectname}_{the_type}.csv"
+        csv_path = os.path.join(ROOT, subjectname, "vernier", filename)
 
         # load csv using pandas
         df = pd.read_csv(csv_path, header=None)
-        df.columns = ["TIME", "RR", "ECG", "HR"]
+        df.columns = ["TIME", "DATA1", "DATA2"]
         length_of_data = len(df)
 
         # get the start time
@@ -102,45 +102,46 @@ def verify_start_end_dur(subjectname, the_type):
 
         # status is true if fps = 20 and there is no null
         # status = int(fps) == 20 and not null #TODO: Fix this
-        status = int(fps) == 20
+        if the_type == "vernier_ecg":
+            status = int(fps) >= 100
+        else:
+            status = int(fps) >= 20
 
         return csv_path, length_of_data, start_time, end_time, duration, fps, status
 
 
-def plot_gt(subject, duration):
+def plot_gt(subject, duration, the_type):
     # load the csv
-    filename = f"{subject}_vernier.csv"
+    filename = f"{subject}_{the_type}.csv"
     csv_path = os.path.join(ROOT, subject, "vernier", filename)
     df = pd.read_csv(csv_path, header=None)
-    df.columns = ["TIME", "RR", "ECG", "HR"]
+    df.columns = ["TIME", "DATA1", "DATA2"]
 
     # create timeaxis
     duration = duration.total_seconds()
     timeaxis = np.linspace(0, duration, len(df))
 
-    # create subplots and save
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(15, 10))
-    ax1.plot(timeaxis, df["RR"])
-    ax1.set_title("RR")
-    ax2.plot(timeaxis, df["ECG"])
-    ax2.set_title("ECG")
+    # plot data 1
+    plt.figure()
+    plt.plot(timeaxis, df["DATA1"].values, label=the_type)
+    plt.title(f"{subject} {the_type}")
 
-    savename = f"{subject}_gt.png"
+    savename = f"{subject}_gt_{the_type}.png"
     saveloc = os.path.join(ROOT, subject, savename)
     plt.savefig(saveloc)
     plt.show()
 
 
-def ecg_heartpy(subject, duration):
-    csv_path = os.path.join(ROOT, subject, "vernier", f"{subject}_vernier.csv")
+def ecg_heartpy(subject, duration, the_type):
+    csv_path = os.path.join(ROOT, subject, "vernier", f"{subject}_vernier_ecg.csv")
+    print(csv_path)
     df = pd.read_csv(csv_path, header=None)
-    df.columns = ["TIME", "RR", "ECG", "HR"]
-
+    df.columns = ["TIME", "DATA1", "DATA2"]
     # validate fps
     fps = len(df) / duration.total_seconds()
 
     # normalize the ecg
-    norm_ecg = df["ECG"].values
+    norm_ecg = df["DATA1"].values
     norm_ecg = norm_ecg - norm_ecg.min()
     norm_ecg = norm_ecg / norm_ecg.max()
     norm_ecg = norm_ecg * 1000
@@ -157,7 +158,7 @@ def ecg_heartpy(subject, duration):
 
 
 def generate_report(subject):
-    item = ["rgb", "thermal", "vernier"]
+    item = ["rgb", "thermal", "vernier_ecg", "vernier_rb"]
 
     for source in item:
         (
@@ -169,9 +170,11 @@ def generate_report(subject):
             fps,
             status,
         ) = verify_start_end_dur(subject, source)
-        if source == "vernier":
-            plot_gt(subject, duration)
-            ecg_heartpy(subject, duration)
+        if source == "vernier_ecg":
+            plot_gt(subject, duration, source)
+            ecg_heartpy(subject, duration, source)
+        elif source == "vernier_rb":
+            plot_gt(subject, duration, source)
 
         # dump the report as txt
         filename = f"{subject}_report.txt"

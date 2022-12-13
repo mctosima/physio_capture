@@ -6,6 +6,7 @@ import os
 import datetime as dt
 import heartpy as hp
 import argparse
+import scipy.signal as signal
 
 ROOT = "dataset"
 
@@ -138,23 +139,35 @@ def ecg_heartpy(subject, duration, the_type):
     df = pd.read_csv(csv_path, header=None)
     df.columns = ["TIME", "DATA1", "DATA2"]
     # validate fps
-    fps = len(df) / duration.total_seconds()
+    fps = int(len(df) / duration.total_seconds())
+    print(f"FPS in Heartpyfunc: {fps}")
 
     # normalize the ecg
     norm_ecg = df["DATA1"].values
-    norm_ecg = norm_ecg - norm_ecg.min()
-    norm_ecg = norm_ecg / norm_ecg.max()
-    norm_ecg = norm_ecg * 1000
-    norm_ecg = norm_ecg.astype(int)
+    # norm_ecg = norm_ecg - norm_ecg.min()
+    # norm_ecg = norm_ecg / norm_ecg.max()
+    # norm_ecg = norm_ecg * 1000
+    # norm_ecg = norm_ecg.astype(int)
 
-    working_data, measures = hp.process(
-        norm_ecg, fps, high_precision=True, clipping_scale=True
-    )
-    plotresults = hp.plotter(working_data, measures, show=False)
+    norm_ecg = hp.filter_signal(norm_ecg, cutoff=2.5, sample_rate=fps, order=3, filtertype="lowpass", return_top=False)
+    ecg_peak, _ = signal.find_peaks(norm_ecg)
+    hrbpm = len(ecg_peak)
+
+
+
+    # working_data, measures = hp.process(
+    #     norm_ecg, fps, high_precision=True, clipping_scale=True
+    # )
+    # plotresults = hp.plotter(working_data, measures, show=False)
     savename = f"{subject}_detect_HR.png"
     saveloc = os.path.join(ROOT, subject, savename)
-    plotresults.savefig(saveloc)
-    plotresults.show()
+    # plotresults.savefig(saveloc)
+    # plotresults.show()
+
+    plt.plot(norm_ecg)
+    plt.plot(ecg_peak, norm_ecg[ecg_peak], "x")
+    plt.title(f"{subject} {the_type} HR: {hrbpm}")
+    plt.savefig(saveloc)
 
 
 def generate_report(subject):

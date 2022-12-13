@@ -83,7 +83,8 @@ if __name__ == "__main__":
     # get the camera id exactly
     graph = FilterGraph()
     thermal_cam_id = graph.get_input_devices().index("PureThermal (fw:v1.3.0)")
-    rgb_cam_id = graph.get_input_devices().index("C270 HD WEBCAM")
+    # rgb_cam_id = graph.get_input_devices().index("C270 HD WEBCAM")
+    rgb_cam_id = graph.get_input_devices().index("c922 Pro Stream Webcam")
 
     if not args.runmin:
         if args.cdown > 0:

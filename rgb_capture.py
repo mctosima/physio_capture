@@ -22,8 +22,8 @@ class RGBCapture:
         cap = cv2.VideoCapture(
             device_id, cv2.CAP_DSHOW
         )  # windowsOS needs cv2.CAP_DSHOW
-        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
         cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc("M", "J", "P", "G"))
         cap.set(cv2.CAP_PROP_CONVERT_RGB, 1)
 

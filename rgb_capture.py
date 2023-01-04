@@ -22,10 +22,24 @@ class RGBCapture:
         cap = cv2.VideoCapture(
             device_id, cv2.CAP_DSHOW
         )  # windowsOS needs cv2.CAP_DSHOW
-        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
-        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        cap.set(cv2.CAP_PROP_FPS, 30)
+
+        # disable auto exposure
+        cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0)
+
+        # set exposure
+        cap.set(cv2.CAP_PROP_EXPOSURE, -7)
+
+        # set codec
+        # cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc("M", "P", "4", "V"))
         cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc("M", "J", "P", "G"))
-        cap.set(cv2.CAP_PROP_CONVERT_RGB, 1)
+        # cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc("Y", "U", "Y", "2"))
+        # cap.set(cv2.CAP_PROP_CONVERT_RGB, 1)
+        
+
 
         if not cap.isOpened():
             print("RGB Camera not found!")
@@ -70,13 +84,13 @@ class RGBCapture:
                 cnt += 1
 
         print(f"Capturing RGB Images... (-3 seconds)")
-        cv2.namedWindow("PreviewRGB", cv2.WINDOW_NORMAL)
+        # cv2.namedWindow("PreviewRGB", cv2.WINDOW_NORMAL) #TODO: hide preview window
         while True:
             ret, img = self.cap.read()
 
             if ret == False:
                 raise Exception("Error reading image")
-            cv2.imshow("PreviewRGB", img)
+            # cv2.imshow("PreviewRGB", img) #TODO: hide preview window
             key = cv2.waitKey(1)
             if key == ord("q"):
                 break
@@ -97,7 +111,7 @@ class RGBCapture:
             if dt.datetime.now() > self.record_end_time:
                 break
 
-        cv2.destroyAllWindows()
+        # cv2.destroyAllWindows() #TODO: hide preview window
 
 
 if __name__ == "__main__":
